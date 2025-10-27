@@ -24,14 +24,30 @@ const User = sequelize.define('User', {
   password: {
     type: DataTypes.STRING,
     allowNull: false
+  },
+  // --- CỘT MỚI CHO OTP ---
+  otpCode: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  otpExpires: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   tableName: 'Users',
   timestamps: true,
   hooks: {
+    // Chạy khi TẠO (register)
     beforeCreate: async (user) => {
-      // Tự động hash mật khẩu trước khi tạo user
       if (user.password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password, salt);
+      }
+    },
+    // Chạy khi CẬP NHẬT (đổi/reset mật khẩu)
+    beforeUpdate: async (user) => {
+      if (user.changed('password')) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
       }
@@ -39,7 +55,7 @@ const User = sequelize.define('User', {
   }
 });
 
-// Thêm phương thức (method) để so sánh mật khẩu
+// Phương thức so sánh mật khẩu
 User.prototype.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
