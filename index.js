@@ -13,12 +13,6 @@ const User = require('./src/models/User');
 const app = express();
 app.use(express.json());
 
-// --- TẠO TÀI KHOẢN ETHEREAL TEST ---
-// (TOÀN BỘ KHỐI CODE "setupEthereal" ĐÃ ĐƯỢC XÓA)
-// ...
-// ...
-// ...
-
 // --- Đồng bộ CSDL ---
 sequelize.sync() 
   .then(() => {
